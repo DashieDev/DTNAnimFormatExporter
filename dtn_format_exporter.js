@@ -69,16 +69,32 @@
             keyframes: []
         };
         for (const keyframe of [...keyframes].sort((a, b) => a.time - b.time)) {
-            animData.keyframes.push({
+            const keyframeData = {
                 at: keyframe.time,
-                value: [
-                    keyframe.get("x"),
-                    keyframe.get("y"),
-                    keyframe.get("z"),
-                ],
                 interp: keyframe.interpolation
-            });
+            }
+            keyframeValue = {
+                x : sanitizeFloatZero(keyframe.get("x")),
+                y : sanitizeFloatZero(keyframe.get("y")),
+                z : sanitizeFloatZero(keyframe.get("z"))
+            }
+            if (!isZeroKeyframe(keyframeValue)) {
+                keyframeData.value = [
+                    keyframeValue.x, keyframeValue.y, keyframeValue.z
+                ]
+            }
+            animData.keyframes.push(keyframeData);
         }
         return animData;
     }
+
+    function isZeroKeyframe({x, y, z}) {
+        return x === 0 && y === 0 && z === 0;
+    }
+    function sanitizeFloatZero(num) {
+        return isFloatEqual(num, 0) ? 0 : num;
+    }
+    function isFloatEqual(num, num1) {
+        return Math.abs(num - num1) < Number.EPSILON;
+    } 
 })();
