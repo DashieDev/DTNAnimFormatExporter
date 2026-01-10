@@ -62,7 +62,7 @@
         return result;
     }
 
-    function generateKeyframes(bone, target, keyframes) {
+    function generateKeyframes(part, type, keyframes) {
         const animData = {
             part,
             type,
