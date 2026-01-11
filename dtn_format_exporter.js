@@ -44,7 +44,7 @@
     function generateJson(animation) {
         const result = {
             dtn_format_version: 1.0,
-            length: animation.length,
+            length: roundTimestamp(animation.length),
             channels: []
         };
         if (animation.loop == "loop") {
@@ -74,14 +74,14 @@
         };
         for (const keyframe of [...keyframes].sort((a, b) => a.time - b.time)) {
             const keyframeData = {
-                at: keyframe.time,
+                at: roundTimestamp(keyframe.time),
                 interp: keyframe.interpolation
             }
-            const keyframeValue = {
+            const keyframeValue = roundKeyframeValue({
                 x : sanitizeFloatZero(keyframe.get("x")),
                 y : sanitizeFloatZero(keyframe.get("y")),
                 z : sanitizeFloatZero(keyframe.get("z"))
-            }
+            })
             if (!isZeroKeyframe(keyframeValue)) {
                 keyframeData.value = [
                     keyframeValue.x, keyframeValue.y, keyframeValue.z
@@ -100,5 +100,16 @@
     }
     function isFloatEqual(num, num1) {
         return Math.abs(num - num1) < Number.EPSILON;
-    } 
+    }
+
+    function roundTimestamp(num) {
+        return Math.roundTo(num, 4);
+    }
+    function roundKeyframeValue({x, y, z}) {
+        return {
+            x: Math.roundTo(x, 2),
+            y: Math.roundTo(y, 2),
+            z: Math.roundTo(z, 2)
+        }
+    }
 })();
