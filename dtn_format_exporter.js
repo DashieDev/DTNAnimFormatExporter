@@ -27,6 +27,10 @@
                         resource_id: "json_entity_animation",
                         savetype: "text",
                         content: JSON.stringify(generateJson(animation))
+                    }, path => {
+                        Blockbench.showQuickMessage(
+                            `Exported animation as DTN Format to : ${path}`, 1000
+                        )
                     });
                 }
             });
