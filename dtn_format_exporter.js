@@ -73,7 +73,7 @@
                 at: keyframe.time,
                 interp: keyframe.interpolation
             }
-            keyframeValue = {
+            const keyframeValue = {
                 x : sanitizeFloatZero(keyframe.get("x")),
                 y : sanitizeFloatZero(keyframe.get("y")),
                 z : sanitizeFloatZero(keyframe.get("z"))
