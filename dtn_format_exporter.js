@@ -15,7 +15,7 @@
             menuButton = new Action("doggytalentsnext_export_anim", {
                 name: "Export Animations to DTN Format",
                 description: "Export Animations to DTN Format",
-                icon: "fa-file-export",
+                icon: "movie",
                 condition: () => Format.animation_mode,
                 click() {
                     const animation = Animation.selected;
@@ -34,7 +34,7 @@
                     });
                 }
             });
-            MenuBar.addAction(menuButton, "file.export");
+            MenuBar.addAction(menuButton, "animation");
         },
         onunload() {
             menuButton.delete();
