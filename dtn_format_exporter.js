@@ -47,6 +47,28 @@
             }
         });
         MenuBar.addAction(guiElements.exportButton, "animation");
+
+        guiElements.importButton = new Action("doggytalentsnext_import_anim", {
+            name: "Import Animations from DTN Format",
+            description: "Import Animations from DTN Format",
+            icon: "movie",
+            condition: () => Format.animation_mode,
+            click() {
+                const animation = Animation.selected;
+                if (animation == null) return;
+                Blockbench.import({
+                    type: "Json Files",
+                    extensions: ["json"],
+                    readtype: "text",
+                    multiple: true,
+                    resource_id: "json_entity_animation",
+                    title: "Import DTN Animation",
+                    errorbox: true
+                }, addAnimationsFromFiles);
+            }
+        });
+
+        MenuBar.addAction(guiElements.importButton, "animation");
     }
 
     function generateJson(animation) {
@@ -98,6 +120,79 @@
             animData.keyframes.push(keyframeData);
         }
         return animData;
+    }
+
+    function addAnimationsFromFiles(files) {
+        let success_count = 0;
+        let failure_count = 0;
+        files.forEach(file => {
+            try {
+                const json = JSON.parse(file.content);
+                const animName = file.name.replace(".json", "");
+                addAnimationFromJson(animName, json);
+                ++success_count;
+            } catch (err) {
+                console.error("Failed to parse DTN Animation:", err);
+                ++failure_count;
+            }
+        });
+        let log_message = "";
+        if (files.length == 1) {
+            const file = files[0];
+            log_message = 
+            `Import ${success_count == 1 ? "successful" : "failed"}: ${file.name}`;
+        } else {
+            log_message =
+                failure_count > 0 ? 
+                `Failed to load ${failure_count}/${files.length} files`
+                : `Loaded ${success_count} files.`
+        }
+        Blockbench.showQuickMessage(log_message, 2000);
+    }
+
+    function addAnimationFromJson(animName, jsonData) {
+        if (Animation.all.map(x => x.name).includes(animName))
+            throw new Error(`Animation already existed: ${animName}`);
+
+        const bbAnim = new Animation({
+            name: animName,
+            length: jsonData.length,
+            loop: jsonData.loop ? "loop" : "once"
+        });
+        
+        const jsonChannels = jsonData.channels; 
+        if (!Array.isArray(jsonChannels))
+            throw new Error(`Bad Json data: ${animName}`);
+        jsonChannels.forEach(generateChannelAndAddTo.bind(null, bbAnim));
+
+        bbAnim.add(true);
+        bbAnim.select();
+    }
+
+    function generateChannelAndAddTo(bbAnimation, jsonChannel) {
+        const bbPart = Group.all.find(g => g.name === jsonChannel.part);
+        if (!bbPart)
+            return;
+        const bbPartAnimator = bbAnimation.getBoneAnimator(bbPart);
+        
+        const type = jsonChannel.type;
+        if (!(type in bbPartAnimator.channels))
+            return;
+
+        const bbKeyframes = jsonChannel.keyframes.map(
+            generateKeyframe.bind(null, bbPartAnimator, type)
+        );
+        bbPartAnimator[type] = bbKeyframes;
+    }
+
+    function generateKeyframe(bbPartAnimator, type, jsonKeyframe) {
+        const value = jsonKeyframe.value || [0, 0, 0];
+        return new Keyframe({
+            channel: type,
+            time: jsonKeyframe.at,
+            interpolation: jsonKeyframe.interp || "linear",
+            x: value[0], y: value[1], z: value[2], 
+        }, null, bbPartAnimator);
     }
 
     function isZeroKeyframe({x, y, z}) {
