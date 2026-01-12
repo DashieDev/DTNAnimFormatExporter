@@ -1,4 +1,4 @@
-// Based off of https://github.com/JannisX11/blockbench-plugins/blob/master/plugins/animation_to_json.js
+// Extended from https://github.com/JannisX11/blockbench-plugins/blob/master/plugins/animation_to_json.js
 (function () {
     "use strict";
 
@@ -83,26 +83,29 @@
         for (const id in animation.animators) {
             const boneAnimator = animation.animators[id];
             if (!(boneAnimator instanceof BoneAnimator)) continue;
-            if (boneAnimator.position.length) {
-                result.channels.push(generateKeyframes(boneAnimator.name, "position", boneAnimator.position));
+            const typeMap = {
+                "position": boneAnimator.position,
+                "rotation": boneAnimator.rotation,
+                "scale": boneAnimator.scale
             }
-            if (boneAnimator.rotation.length) {
-                result.channels.push(generateKeyframes(boneAnimator.name, "rotation", boneAnimator.rotation));
-            }
-            if (boneAnimator.scale.length) {
-                result.channels.push(generateKeyframes(boneAnimator.name, "scale", boneAnimator.scale));
+            for (const type in typeMap) {
+                const bbChannel = typeMap[type];
+                if (bbChannel.length <= 0)
+                    continue;
+                const jsonChannel = generateKeyframes(boneAnimator.name, type, bbChannel);
+                result.channels.push(jsonChannel);
             }
         }
         return result;
     }
 
-    function generateKeyframes(part, type, keyframes) {
+    function generateKeyframes(part, type, bbKeyframes) {
         const animData = {
             part,
             type,
             keyframes: []
         };
-        for (const keyframe of [...keyframes].sort((a, b) => a.time - b.time)) {
+        for (const keyframe of [...bbKeyframes].sort((a, b) => a.time - b.time)) {
             const keyframeData = {
                 at: roundTimestamp(keyframe.time),
                 interp: keyframe.interpolation
