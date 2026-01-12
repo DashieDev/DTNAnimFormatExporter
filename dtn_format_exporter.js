@@ -155,7 +155,7 @@
 
     function addAnimationFromJson(animName, jsonData) {
         if (Animation.all.map(x => x.name).includes(animName))
-            throw new Error(`Animation already existed: ${animName}`);
+            throw new Error(`Animation already exists: ${animName}`);
 
         const bbAnim = new Animation({
             name: animName,
