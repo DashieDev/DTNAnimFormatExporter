@@ -52,7 +52,7 @@
             name: "Import Animations from DTN Format",
             description: "Import Animations from DTN Format",
             icon: "movie",
-            condition: () => Format.animation_mode,
+            condition: () => true,
             click() {
                 const animation = Animation.selected;
                 if (animation == null) return;
