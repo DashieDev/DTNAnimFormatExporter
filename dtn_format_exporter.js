@@ -166,6 +166,7 @@
         const jsonChannels = jsonData.channels; 
         if (!Array.isArray(jsonChannels))
             throw new Error(`Bad Json data: ${animName}`);
+        
         jsonChannels.forEach(generateChannelAndAddTo.bind(null, bbAnim));
 
         bbAnim.add(true);
