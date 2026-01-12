@@ -1,5 +1,7 @@
 // Based off of https://github.com/JannisX11/blockbench-plugins/blob/master/plugins/animation_to_json.js
 (function () {
+    "use strict";
+
     const guiElements = {
         exportButton : null,
         importButton : null
@@ -14,7 +16,7 @@
         variant: "both",
         version: "1.0.0",
         onload: onPluginLoad.bind(null, guiElements),
-        onunload() {
+        onunload: () => {
             guiElements.exportButton.delete();
             guiElements.importButton.delete();
         }
