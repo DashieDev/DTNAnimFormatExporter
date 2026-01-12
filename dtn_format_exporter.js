@@ -1,6 +1,9 @@
 // Based off of https://github.com/JannisX11/blockbench-plugins/blob/master/plugins/animation_to_json.js
 (function () {
-    var menuButton;
+    const guiElements = {
+        exportButton : null,
+        importButton : null
+    };
 
     Plugin.register("dtn_format_exporter", {
         title: "DoggyTalentsNext Animation Format Exporter",
@@ -10,36 +13,39 @@
         tags: ["Animation", "Minecraft: Java Edition"],
         variant: "both",
         version: "1.0.0",
-        onload() {
-            Formats.modded_entity.animation_mode = true;
-            menuButton = new Action("doggytalentsnext_export_anim", {
-                name: "Export Animations to DTN Format",
-                description: "Export Animations to DTN Format",
-                icon: "movie",
-                condition: () => Format.animation_mode,
-                click() {
-                    const animation = Animation.selected;
-                    if (animation == null) return;
-                    Blockbench.export({
-                        type: "Json Files",
-                        extensions: ["json"],
-                        name: `${animation.name.replaceAll(".", "_").replace("animation_", "")}.json`,
-                        resource_id: "json_entity_animation",
-                        savetype: "text",
-                        content: JSON.stringify(generateJson(animation))
-                    }, path => {
-                        Blockbench.showQuickMessage(
-                            `Exported animation as DTN Format to : ${path}`, 1000
-                        )
-                    });
-                }
-            });
-            MenuBar.addAction(menuButton, "animation");
-        },
+        onload: onPluginLoad.bind(null, guiElements),
         onunload() {
-            menuButton.delete();
+            guiElements.exportButton.delete();
+            guiElements.importButton.delete();
         }
     });
+
+    function onPluginLoad(guiElements) {
+        Formats.modded_entity.animation_mode = true;
+        guiElements.exportButton = new Action("doggytalentsnext_export_anim", {
+            name: "Export Animations to DTN Format",
+            description: "Export Animations to DTN Format",
+            icon: "movie",
+            condition: () => Format.animation_mode,
+            click() {
+                const animation = Animation.selected;
+                if (animation == null) return;
+                Blockbench.export({
+                    type: "Json Files",
+                    extensions: ["json"],
+                    name: `${animation.name.replaceAll(".", "_").replace("animation_", "")}.json`,
+                    resource_id: "json_entity_animation",
+                    savetype: "text",
+                    content: JSON.stringify(generateJson(animation))
+                }, path => {
+                    Blockbench.showQuickMessage(
+                        `Exported animation as DTN Format to : ${path}`, 1000
+                    )
+                });
+            }
+        });
+        MenuBar.addAction(guiElements.exportButton, "animation");
+    }
 
     function generateJson(animation) {
         const result = {
