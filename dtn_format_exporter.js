@@ -32,13 +32,23 @@
             click() {
                 const animation = Animation.selected;
                 if (animation == null) return;
+                let content = {}
+                try {
+                    content = JSON.stringify(generateJson(animation))
+                } catch (err) {
+                    console.error("Failed to export Animation:", err);
+                    Blockbench.showQuickMessage(
+                        `Failed to export Animation`, 1000
+                    )
+                    return;
+                }
                 Blockbench.export({
                     type: "Json Files",
                     extensions: ["json"],
                     name: `${animation.name.replaceAll(".", "_").replace("animation_", "")}.json`,
                     resource_id: "json_entity_animation",
                     savetype: "text",
-                    content: JSON.stringify(generateJson(animation))
+                    content: content
                 }, path => {
                     Blockbench.showQuickMessage(
                         `Exported animation as DTN Format to : ${path}`, 1000
@@ -111,9 +121,9 @@
                 interp: keyframe.interpolation
             }
             const keyframeValue = roundKeyframeValue({
-                x : sanitizeFloatZero(keyframe.get("x")),
-                y : sanitizeFloatZero(keyframe.get("y")),
-                z : sanitizeFloatZero(keyframe.get("z"))
+                x : getKeyFrameAxisOrThrow(keyframe, "x"),
+                y : getKeyFrameAxisOrThrow(keyframe, "y"),
+                z : getKeyFrameAxisOrThrow(keyframe, "z")
             })
             if (!isZeroKeyframe(keyframeValue)) {
                 keyframeData.value = [
@@ -199,6 +209,14 @@
         }, null, bbPartAnimator);
     }
 
+    function getKeyFrameAxisOrThrow(keyframe, axis) {
+        let val = keyframe.get(axis);
+        if (isNaN(val)) 
+            val = keyframe.calc(axis);
+        if (isNaN(val) || !isFinite(val))
+            throw new Error("Bad keyframe detected!");
+        return sanitizeFloatZero(val);
+    }
     function isZeroKeyframe({x, y, z}) {
         return x === 0 && y === 0 && z === 0;
     }
