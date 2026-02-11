@@ -94,14 +94,15 @@
         };
         for (const group of root_groups) {
             if (group.export) {
-                model.parts.push(parseGroup(group));
+                const all_cubes = getAllGroups().slice();
+                model.parts.push(parseGroup(group, all_cubes));
             }
         }
 
         return JSON.stringify(model);
     }
 
-    function parseGroup(group) {
+    function parseGroup(group, allCubes) {
         const part = {
             id: group.name,
             pivot: group.origin.slice(), 
@@ -114,13 +115,13 @@
         for (const child of group.children) {
             if (!child.export) continue;
 
-            if (mayGenerateOrUseSynthetic(synthetics, child, group))
+            if (mayGenerateOrUseSynthetic(synthetics, child, group, allCubes))
                 continue;
 
             if (child instanceof Cube) {
                 part.cubes.push(parseCube(child));
             } else if (child instanceof Group) {
-                part.children.push(parseGroup(child));
+                part.children.push(parseGroup(child, allCubes));
             }
         }
 
@@ -139,7 +140,7 @@
         return part;
     }
 
-    function mayGenerateOrUseSynthetic(existings, cube, parent) {
+    function mayGenerateOrUseSynthetic(existings, cube, parent, allCubes) {
         if (!(cube instanceof Cube))
             return false;
         const rotation = cube.rotation.slice();
@@ -155,21 +156,22 @@
                 cubes: [],
                 bb_inline: true //Mark to be inlined when import back to Blockbench
             };
-            synth.id = createUniqueNameForSyntheticPart(`${cube.name}_r1`, synth, parent);
+            synth.id = createUniqueNameForSyntheticPart(`${cube.name}_r1`, synth, parent, allCubes);
             existings.push(synth);
         }
         synth.cubes.push(parseCube(cube));
         return true;
     }
 
-    function createUniqueNameForSyntheticPart(cube_name, synth_part, parent) {
+    function createUniqueNameForSyntheticPart(cube_name, synth_part, parent, allCubes) {
         const group = new Group({
             rotation: synth_part.rotation,
             origin: synth_part.pivot,
             name: cube_name
         });
         group.parent = parent;
-        group.createUniqueName(getAllGroups());
+        group.createUniqueName(allCubes);
+        allCubes.push(group);
         return group.name;
     }
 
