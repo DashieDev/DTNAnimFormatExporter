@@ -127,7 +127,7 @@
         if (synthetics.length != 0)
             synthetics.forEach(x => part.children.push(x)); 
 
-        [part, ...part.children].forEach(p => {
+        [part, ...synthetics].forEach(p => {
             if (p.pivot) p.pivot = fvec(p.pivot);
             if (p.rotation) p.rotation = fvec(p.rotation);
         })
@@ -216,6 +216,6 @@
         return vec.allAre(x => x === 0);
     }
     function fvec(vec) {
-        return vec.map(trimFloatNumber);
+        return vec.map(trimFloatNumber).map(parseFloat);
     }
 })();
