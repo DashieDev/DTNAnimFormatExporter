@@ -127,14 +127,14 @@
         if (synthetics.length != 0)
             synthetics.forEach(x => part.children.push(x)); 
 
-        if (isZeroVec3(part.rotation)) delete part.rotation;
-        if (part.cubes.length === 0) delete part.cubes;
-        if (part.children.length === 0) delete part.children;
-        
         [part, ...part.children].forEach(p => {
             if (p.pivot) p.pivot = fvec(p.pivot);
             if (p.rotation) p.rotation = fvec(p.rotation);
         })
+
+        if (isZeroVec3(part.rotation)) delete part.rotation;
+        if (part.cubes.length === 0) delete part.cubes;
+        if (part.children.length === 0) delete part.children;
 
         return part;
     }
