@@ -216,7 +216,7 @@
         return vec.allAre(x => x === 0);
     }
     function fvec(vec) {
-        return vec.map(trimFloatNumber).map(parseFloat);
+        return vec.map(x => asFloat(x));
     }
     function asFloat(num) {
         return parseFloat(trimFloatNumber(num));
