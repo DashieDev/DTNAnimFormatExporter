@@ -196,8 +196,7 @@
         const cube_data = {
             uv: cube.uv_offset.slice(),
             from: cube.from.slice(),
-            to: cube.to.slice(),
-            inflate: cube.inflate
+            to: cube.to.slice()
         };
 
         if (cube.mirror_uv) cube_data.mirror = cube.mirror_uv;
