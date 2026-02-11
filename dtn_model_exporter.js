@@ -6,7 +6,7 @@
         importButton : null
     };
 
-    Plugin.register("dtn_format_exporter", {
+    Plugin.register("dtn_model_exporter", {
         title: "DoggyTalentsNext Model Format Exporter",
         author: "DashieDev",
         description: "Plugin to export model for the DoggyTalentsNext Mod",
