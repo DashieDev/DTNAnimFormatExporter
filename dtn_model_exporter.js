@@ -92,7 +92,7 @@
             texture_size: [Project.texture_width, Project.texture_height],
             parts: []
         };
-        for (var group of root_groups) {
+        for (const group of root_groups) {
             if (group.export) {
                 model.parts.push(parseGroup(group));
             }
@@ -102,7 +102,7 @@
     }
 
     function parseGroup(group) {
-        var part = {
+        const part = {
             id: group.name,
             pivot: group.origin.slice(), 
             rotation: group.rotation.slice(),
@@ -111,7 +111,7 @@
         };
 
         const synthetics = [];
-        for (var child of group.children) {
+        for (const child of group.children) {
             if (!child.export) continue;
 
             if (mayGenerateOrUseSynthetic(synthetics, child, group))
@@ -176,7 +176,7 @@
         if (!one_axis_rot)
             return synth_part.pivot.equals(cube.origin);
         
-        for (var i = 0; i < 3; i++) {
+        for (let i = 0; i < 3; i++) {
             if (synth_part.rotation[i] == 0 && synth_part.pivot[i] != cube.origin[i]) 
                 return false;
         }
