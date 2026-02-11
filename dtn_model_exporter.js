@@ -205,7 +205,7 @@
         };
 
         if (cube.mirror_uv) cube_data.mirror = cube.mirror_uv;
-        if (cube.inflate != 0) cube_data.inflate = cube.inflate;
+        if (cube.inflate != 0) cube_data.inflate = asFloat(cube.inflate);
 
         return cube_data;
     }
@@ -217,5 +217,8 @@
     }
     function fvec(vec) {
         return vec.map(trimFloatNumber).map(parseFloat);
+    }
+    function asFloat(num) {
+        return parseFloat(trimFloatNumber(num));
     }
 })();
