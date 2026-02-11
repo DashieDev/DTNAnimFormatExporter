@@ -130,6 +130,11 @@
         if (isZeroVec3(part.rotation)) delete part.rotation;
         if (part.cubes.length === 0) delete part.cubes;
         if (part.children.length === 0) delete part.children;
+        
+        [part, ...part.children].forEach(p => {
+            if (p.pivot) p.pivot = fvec(p.pivot);
+            if (p.rotation) p.rotation = fvec(p.rotation);
+        })
 
         return part;
     }
@@ -195,8 +200,8 @@
 
         const cube_data = {
             uv: cube.uv_offset.slice(),
-            from: cube.from.slice(),
-            to: cube.to.slice()
+            from: fvec(cube.from),
+            to: fvec(cube.to)
         };
 
         if (cube.mirror_uv) cube_data.mirror = cube.mirror_uv;
@@ -209,5 +214,8 @@
 
     function isZeroVec3(vec) {
         return vec.allAre(x => x === 0);
+    }
+    function fvec(vec) {
+        return vec.map(trimFloatNumber);
     }
 })();
